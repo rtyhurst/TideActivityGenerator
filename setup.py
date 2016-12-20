@@ -12,7 +12,7 @@ config = {
     'download_url': 'Where to download it.',
     'author_email': 'rtyhurst@gmail.com',
     'version': '0.1',
-    'install_requires': ['nose'],
+    'install_requires': ['nose','openpyxl'],
     'packages': ['NAME'],
     'scripts': [],
     'name': 'tideActivityGenerator'
