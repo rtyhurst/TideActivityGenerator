@@ -7,15 +7,30 @@ import datetime
 
 desired_width = 179
 
+'''
+Header Fields
+Listing Number,Status,Property Sub-Type,Street #,Street Name,
+Original List Price,Listing Price,Sold Price,Cumulative DOM,
+Days On Market,# Bedrooms,Baths - Total,Baths - Full,Baths - 3/4,
+Baths - 1/2,Baths - 1/4,Approx SqFt,Lot SqFt,Year Built,Sold Date
+'''
 
 def do_convert(file_name):
-    file = 'latestShoresSoldSfrYrToDate.xlsx' if file_name is None else file_name
-    df = pd.read_excel(file)
+    # file = 'latestShoresSoldSfrYrToDate.xlsx' if file_name is None else file_name
+    file = 'shores.xlsx' if file_name is None else file_name
+    root, ext = os.path.splitext(file)
+    if ext == '.csv':
+        df = pd.read_csv(file)
+    elif ext == '.xlsx':
+        df = pd.read_excel(file)
+    else:
+        return None
+
     Bath = []
     for row in df:
-        df['T BA'] = df['BA F'] + df['BA 3/4'] * .75 + df['BA 1/2'] * .5 + \
-                     df['BA 1/4'] * .25
-        if args.verbose: print(df.head())
+        df['Baths - Total'] = df['Baths - Full'] + df['Baths - 3/4'] * .75 + \
+                              df['Baths - 1/2'] * .5 + df['Baths - 1/4'] * .25
+    if args.verbose: print(df.head())
 
     df.drop(['MLS\xa0#', 'Status', 'BA F', 'BA 3/4', 'BA 1/2', 'BA 1/4'],
             axis=1,
