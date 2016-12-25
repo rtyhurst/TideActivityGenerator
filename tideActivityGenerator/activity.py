@@ -1,10 +1,10 @@
 import argparse
 import os
 import sys
+import datetime
 import pandas as pd
 import numpy as np
 from openpyxl import load_workbook
-import datetime
 
 desired_width = 179
 pd.set_option('display.width', desired_width)
@@ -24,11 +24,13 @@ def get_active(df, status='A', prtype='SF'):
     :param Prtype:  SF=Single Family, CN= Condo, TH= Town home
     """
     if prtype == 'SF':
-        selected = df[(df.Status == status) & (df.Prtype == prtype)]
+        active = df[(df.Status == status) & (df.Prtype == prtype)]
     else:
-        sel = df[((df.Status == status) & (df.Prtype == 'CN')) |
+        act = df[((df.Status == status) & (df.Prtype == 'CN')) |
                  ((df.Status == status) & (df.Prtype == 'TH'))]
-        selected = sel.sort_values(by=['Status', 'Sale Price', 'Listing Price'])
+        active = act.sort_values(by=['Status', 'Sale Price', 'Listing Price'])
+
+    selected = active.drop(['Original List Price', 'Sale Price'], axis=1)
 
     return selected
 
@@ -41,12 +43,13 @@ def get_sold(df, prtype='SF'):
     :return: Extracted DataFrame
     '''
     if prtype == 'SF':
-        selected = df[(df.Status == 'C') & (df.Prtype == 'SF')]
+        sell = df[(df.Status == 'C') & (df.Prtype == 'SF')]
     else:
         sel = df[((df.Status == 'C') & (df.Prtype == 'CN')) |
                  ((df.Status == 'C') & (df.Prtype == 'TH'))]
-        selected = sel.sort_values(by=['Status', 'Sale Price', 'Listing Price'])
+        sell = sel.sort_values(by=['Status', 'Sale Price', 'Listing Price'])
 
+    selected = sell.drop(['Original List Price', 'Listing Price'], axis=1)
     return selected
 
 
@@ -145,7 +148,7 @@ def do_convert(file_name):
     sheets.append(('Escrow_Condos', get_active(df, 'P', 'CN')))
     sheets.append(('Sold_Condos', get_sold(df, 'CN')))
 
-    write_sheet(sheets, 'test.xlsx')
+    write_sheet(sheets, 'tides.xlsx')
 
 
 if __name__ == '__main__':
